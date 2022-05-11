@@ -8,10 +8,8 @@ import sensor
 
 def dispense_mask():
     # Check if there is not another mask in the collection area
-<<<<<<< HEAD:Lib/MotorControl_example_files/dispense.py
-=======
+
     # 检查收集区是否有其它口罩。
->>>>>>> ba00b04ea178c39d71c452e25ef1d277abf379af:JWH_MotorControl/dispense.py
     #### Sensor Code ####
 
     # Path is clear, isolate mask from stack by rotating stepper1
@@ -21,10 +19,6 @@ def dispense_mask():
     stepper.act(1, 1, "ccw")
 
     # Is mask in position?
-<<<<<<< HEAD:Lib/MotorControl_example_files/dispense.py
-=======
-    # 口罩被运送到相应的区域了吗？
->>>>>>> ba00b04ea178c39d71c452e25ef1d277abf379af:JWH_MotorControl/dispense.py
     #### Sensor Code ####
 
     # Open the door and proceed to push the mask out
