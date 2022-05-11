@@ -1,0 +1,38 @@
+Hi, this is the description file for Team 7's METR4810 Contactless Face Mask
+
+The device is modeled after what we've been calling a printer design.
+Essentially treating the face masks like paper, moving them from a stack with conveyors and rollers.
+
+The computations and control are designed to be performed on a Raspberry Pi 3 Model B.
+
+Electrical Components:
+    28BYJ-28 Stepper Motor and ULN2003 Driver x2
+    Micro Servo 9g
+    SEN0208 Water Resistant Ultrasonic Sensor
+    SFH 309 FA-4/5 Photo transistor
+    LEDs (Red, Orange, Yellow, Green, Infrared)
+
+PIN LAYOUT:
+Stepper -> 3, 5, 7, 11, 16, 18, 22, 24
+Servo   -> 12
+UL Trig -> 8
+UL ECHO -> 10
+
+LEDs
+Fault   -> 31
+Ready   -> 33
+User    -> 35
+Disp    -> 37
+100%    -> 13
+75%     -> 15
+50%     -> 19
+25%     -> 21
+Empty   -> 23
+
+IR
+75%     -> 36
+50%     -> 38
+25%     -> 40
+Empty   -> 32
+Collect -> 26
+
