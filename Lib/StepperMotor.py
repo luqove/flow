@@ -28,10 +28,11 @@ class StepperMotor(object):
     """
 
     def __init__(self, motor_pins):
-        # 一个motor对应四个pin, 以下是两个motor分别对应的pin。需要在创建的时候输入。
+        # One motor corresponds to four pins, 
+        #and the following are the corresponding pins of two motors. need to be entered when creating。
         # [7, 11, 13, 15],
         # [22, 23, 24, 25]
-        # 区分motor则在sourcelib中写为 Stepper_motor_0 Stepper_motor_1
+        # To distinguish motor, it is written as Stepper_motor_0 Stepper_motor_1 in sourcelib
         self.motor_pins = motor_pins
         # initial motor pins
         self.gpio_setup()
@@ -41,8 +42,7 @@ class StepperMotor(object):
             GPIO.setup(outpin, GPIO.OUT)
             GPIO.output(outpin, 0)
 
-    # 实现转动，来达成开门，或者转动皮带
-    # 参数是输入的脉冲。
+    # To achieve rotation, door opening, or to rotate the belt
     def act(self, num_rev, direction):
         # To avoid complications in remembering which step a motor is currently at
         # limit commands exclusively to a full revolution
