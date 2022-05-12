@@ -1,14 +1,9 @@
 import time
-import RPi.GPIO as GPIO
 
 import RPi.GPIO as GPIO
 
 from Lib.Button import Button
 from Lib.IRSensor import IRSensor
-from Lib.StepperMotor import StepperMotor
-from Lib.ServoMotor import ServoMotor
-from Lib.ULSensor import ULSensor
->>>>>>> ba00b04ea178c39d71c452e25ef1d277abf379af
 from Lib.LED import LED
 from Lib.ServoMotor import ServoMotor
 from Lib.StepperMotor import StepperMotor
@@ -18,19 +13,11 @@ from const import *
 
 class System(object):
     """
-    The main thread, reads the data of the sensors 
-    and controls the machine according to the data.
+    main thread
     """
 
     def __init__(self):
         # stack count 50
-    The main thread, reads the data of the sensors, 
-    and controls the machine according to the data。
-    """
-
-    def __init__(self):
-        # stack count initial 50 masks
-        # Used to send the existing number of masks to the GUI.
         self.stack_count = 50
 
         # Setup the pins
@@ -44,17 +31,7 @@ class System(object):
         self.IR_sensor_Collect = IRSensor(IR_COLLECT_pin)
 
         # UL sensors
-        # UL sensor pin
-        # TODO Fill in the corresponding pin to control the corresponding sensor, note that I am not sure if some originals require more than two signal transmission pins.
-        # TODO If there are two or more pins that need to be filled in, go to the corresponding lib and add more parameters in the parentheses of self.__init__()
-        # TODO eg self.__init__(self, pin1, pin2)
-        self.IR_sensor_1 = IRSensor('''pin''')
-        self.IR_sensor_2 = IRSensor('''pin''')
-        self.IR_sensor_3 = IRSensor('''pin''')
-        self.IR_sensor_4 = IRSensor('''pin''')
-        self.IR_sensor_5 = IRSensor('''pin''')
-
-        # UL sensors
+        # UL pin
         self.UL_sensor_1 = ULSensor()
 
         # Stepper_motor
@@ -78,22 +55,6 @@ class System(object):
         self.LED_75P = LED(LED_75P_pin)
         self.LED_50P = LED(LED_50P_pin)
         self.LED_25P = LED(LED_25P_pin)
-        
-        # button
-        self.reset_button = Button('''pin''')
-
-        # TODO LED pin
-        self.LED_PWR = LED('''pin''')
-        self.LED_READY = LED('''pin''')
-        self.LED_USER = LED('''pin''')
-        self.LED_DISPENSING = LED('''pin''')
-        self.LED_EMPTY = LED('''pin''')
-        self.LED_FAULT = LED('''pin''')
-
-        self.LED_100P = LED('''pin''')
-        self.LED_75P = LED('''pin''')
-        self.LED_50P = LED('''pin''')
-        self.LED_25P = LED('''pin''')
 
     # reset all
     def reset(self):
@@ -101,25 +62,12 @@ class System(object):
         self.reset_report_led()
 
         self.close_door()
-        
+        #
         self.IR_sensor_Empty.current_read = IR_HIGH_NO_OBJ
         self.IR_sensor_25P.current_read = IR_HIGH_NO_OBJ
         self.IR_sensor_50P.current_read = IR_HIGH_NO_OBJ
         self.IR_sensor_75P.current_read = IR_HIGH_NO_OBJ
         self.IR_sensor_Collect.current_read = IR_HIGH_NO_OBJ
-
-    #Remaining masks led display reset
-
-        # self.Stepper_motor_0.act('''init''')
-        # self.Stepper_motor_1.act('''init''')
-
-        self.close_door()
-#
-        self.IR_sensor_1.current_read = IR_LOW
-        self.IR_sensor_2.current_read = IR_LOW
-        self.IR_sensor_3.current_read = IR_LOW
-        self.IR_sensor_4.current_read = IR_LOW
-        self.IR_sensor_5.current_read = IR_LOW
 
     # Remaining masks led display reset
     def reset_stock_led(self):
@@ -139,34 +87,30 @@ class System(object):
     # Turn on red "empty" LED and
     # notify control centre
     def report_empty(self):
-        # turn off
-        self.reset_report_led()
-        # turn up LED_EMPTY
         # turn off the rest of the leds
         self.reset_report_led()
-        # turn on LED_EMPTY
+        # open LED_EMPTY
         self.turn_on_led(LED_EMPTY)
 
     # Turn on fault LED and notify control centre
     def report_fault(self):
         # turn off the rest of the leds
         self.reset_report_led()
-        # Turn on LED_FAULT
-        # turn on LED_FAULT
+        # oen LED_FAULT
         self.turn_on_led(LED_FAULT)
 
     # what is the stack level?
     def display_stack_level(self):
-        # 更新IR_sensor1的读书
+        # update IR_sensor1
         self.IR_sensor_25P.read_data()
         self.IR_sensor_50P.read_data()
         self.IR_sensor_75P.read_data()
         # Reset the previous remaining amount display
         self.reset_stock_led()
-        # 0-25
+        # 0-25%
         if self.IR_sensor_25P.current_read == IR_HIGH_NO_OBJ:
             self.turn_on_led(LED_25P)
-        # 25-50
+        # 25-50%
         elif (self.IR_sensor_25P.current_read == IR_LOW_HAS_OBJ and
               self.IR_sensor_50P.current_read == IR_HIGH_NO_OBJ):
             self.turn_on_led(LED_50P)
@@ -179,29 +123,6 @@ class System(object):
         elif (self.IR_sensor_25P.current_read == IR_LOW_HAS_OBJ and
               self.IR_sensor_50P.current_read == IR_LOW_HAS_OBJ and
               self.IR_sensor_75P.current_read == IR_LOW_HAS_OBJ):
-
-        self.IR_sensor_2.read_data()
-        self.IR_sensor_3.read_data()
-        self.IR_sensor_4.read_data()
-        # restet
-        self.reset_stock_led()
-        # TODO 
-        # 0-25%
-        if self.IR_sensor_2.current_read == IR_LOW:
-            self.turn_on_led(LED_25P)
-        # 25-50%
-        elif self.IR_sensor_2.current_read == IR_HIGH and self.IR_sensor_3 == IR_LOW:
-            self.turn_on_led(LED_50P)
-        # 50-75%
-        elif (self.IR_sensor_2.current_read == IR_HIGH and
-              self.IR_sensor_3.current_read == IR_HIGH and
-              self.IR_sensor_4.current_read == IR_LOW):
-            self.turn_on_led(LED_75P)
-        # 75-100%
-        elif (self.IR_sensor_2.current_read == IR_HIGH and
-              self.IR_sensor_3.current_read == IR_HIGH and
-              self.IR_sensor_4.current_read == IR_HIGH):
-
             self.turn_on_led(LED_100P)
 
     # Is mask tray empty?
@@ -211,39 +132,20 @@ class System(object):
             return True
         else:
             return False
-       
+  
     # Is a mask in transit?
     def is_mask_in_transit(self):
-        # update IR_sensor5
+        # Update the reading of IR_sensor5
         self.IR_sensor_Collect.read_data()
         if self.IR_sensor_Collect.current_read == IR_LOW_HAS_OBJ:
             return True
-        
-        else:
-            return False
-        #According to the flow chart, the next Turn on "Ready" LED
-        self.IR_sensor_1.read_data()
-        # TODO Not sure if LOW or HIGH means empty here
-        if self.IR_sensor_1.current_read == IR_LOW:
-            return True
-        else:
-            return False
-
-    # Is a mask in transit?
-    def is_mask_in_transit(self):
-        # update IR_sensor5
-        self.IR_sensor_5.read_data()
-        # TODO
-        if self.IR_sensor_5.current_read > 0:
-            return True
+   
         else:
             return False
 
     # Is mask requested
     def is_mask_requested(self):
         self.UL_sensor_1.read_data()
-
-        # TODO According to  if the distance is less than 40cm, user detected
         if self.UL_sensor_1.current_read < 40:
             return True
         else:
@@ -253,25 +155,17 @@ class System(object):
     def is_mask_in_waiting_position(self):
         self.IR_sensor_Collect.read_data()
         if self.IR_sensor_Collect.current_read == IR_LOW_HAS_OBJ:
-        self.IR_sensor_5.read_data()
-        # TODONot sure here if IR_HIGH or IR_LOW means maks are waiting
-        if self.IR_sensor_5.current_read == IR_HIGH:
             return True
         else:
             return False
 
     # dispensing mask
-    # Take the mask out of the stack
     def dispensing_mask(self):
         self.reset_report_led()
         self.turn_on_led(LED_DISPENSING)
         self.Stepper_motor_0.act(2, "ccw")  # partially slide mask out of stack
         # TODO Should there be a time gap between two motor moves
         self.Stepper_motor_1.act(1, "ccw")  # pull the mask completely out of stack
-
-        self.Stepper_motor_0.act(2, "ccw")   # partially slide mask out of stack
-        # TODO Should there be a time gap between two motor moves
-        self.Stepper_motor_1.act(1, "ccw")   # pull the mask completely out of stack
         self.turn_off_led(LED_DISPENSING)
 
     # Open door
@@ -283,25 +177,20 @@ class System(object):
         self.Servo_motor_0.act(0)
 
     # Release the mask partially
+    # 将口罩部分推出机器等待客人拿取
     def release_mask_partially(self):
         self.Stepper_motor_1.act(2, "ccw")
 
     # Release the mask totally
-    # Here is simplified usage. It may only be necessary to partially do it.
-    #  Delete depending on the situation.
-    # Here is simplified usage. Delete depending on the situation.
+    # Push the mask completely out of the machine
+    # Here is simplified usage. 
+    #It may only be necessary to partially do it. Delete depending on the situation.
     def release_mask_totally(self):
         self.Stepper_motor_1.act(2, "ccw")
 
     # Is a mask in the collection position?
-    # Here I understand that if the guest does not take the mask for a long time
-    # the mask will be forced out completely.
     def is_mask_still_waiting_collection(self):
         if self.IR_sensor_Collect.current_read == IR_LOW_HAS_OBJ:
-    def is_mask_still_waiting_collection(self):
-        # TODO Not sure here if IR_HIGH or IR_LOW means maks are waiting
-        if self.IR_sensor_5.current_read == IR_HIGH:
-
             return True
         else:
             return False
@@ -348,28 +237,17 @@ class System(object):
         elif led == LED_100P:
             self.LED_100P.turn_off()
 
-    # HALT system on standby
-    # do nothing until reset_button is pressed
+    # HALT 
     def HALT(self):
         while not self.reset_button.is_pushed():
-            # Poll every 0.1 seconds to detect whether the reset button is pressed
+            # 每0.1秒轮询检测一次reset按钮是否按下
             time.sleep(0.1)
-
-    # Wait_request The system is on standby 
-    # and does nothing until a customer comes to buy a mask
-    def wait_request(self):
-        while not self.is_mask_requested():
-            time.sleep(0.1)
-    # HALT The system stands by and does nothing until reset_button is pressed
-    def HALT(self):
-        while not self.reset_button.is_pushed():
-            time.sleep(1)
 
     # Wait_request 
     def wait_request(self):
         while not self.is_mask_requested():
             # Poll every 0.1 seconds to check whether a client sends a Mask request
-            time.sleep(1)
+            time.sleep(0.1)
 
     # Open door and move mask into collection position.
     # Wait 3 seconds for user to collect the mask
@@ -377,8 +255,4 @@ class System(object):
         self.open_door()
         self.release_mask_partially()
         time.sleep(3)
-
-    # TODO
-    def send_current_stack_count(self):
-        pass
 
