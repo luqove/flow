@@ -2,39 +2,30 @@
 
 import RPi.GPIO as GPIO
 import time
+from const import *
 
-# GPIO Mode (BOARD / BCM)
-GPIO.setmode(GPIO.BOARD)
-GPIO.setwarnings(False)
-
-# set GPIO Pins
-GPIO_TRIGGER = 16
-GPIO_ECHO = 18
-GPIO_LED = 22
 
 # set GPIO direction (IN / OUT)
-GPIO.setup(GPIO_TRIGGER, GPIO.OUT)
-GPIO.setup(GPIO_ECHO, GPIO.IN)
-GPIO.setup(GPIO_LED, GPIO.OUT)
-
+GPIO.setup(TRIGGER, GPIO.OUT)
+GPIO.setup(ECHO, GPIO.IN)
 
 def distance():
     # set Trigger to HIGH
-    GPIO.output(GPIO_TRIGGER, True)
+    GPIO.output(TRIGGER, True)
 
     # set Trigger after 0.01ms to LOW
     time.sleep(0.00001)
-    GPIO.output(GPIO_TRIGGER, False)
+    GPIO.output(TRIGGER, False)
 
     StartTime = time.time()
     StopTime = time.time()
 
     # save StartTime
-    while GPIO.input(GPIO_ECHO) == 0:
+    while GPIO.input(ECHO) == 0:
         StartTime = time.time()
 
     # save time of arrival
-    while GPIO.input(GPIO_ECHO) == 1:
+    while GPIO.input(ECHO) == 1:
         StopTime = time.time()
         # print("lol")
 

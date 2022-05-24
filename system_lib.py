@@ -2,6 +2,9 @@ import time
 
 import RPi.GPIO as GPIO
 
+GPIO.setmode(GPIO.BOARD)
+GPIO.setwarnings(False)
+
 from Lib.Button import Button
 from Lib.IRSensor import IRSensor
 from Lib.LED import LED
@@ -20,41 +23,38 @@ class System(object):
         # stack count 50
         self.stack_count = 50
 
-        # Setup the pins
-        GPIO.setmode(GPIO.BOARD)
-
         # IR sensors
-        self.IR_sensor_Empty = IRSensor(IR_EMPTY_pin)
-        self.IR_sensor_25P = IRSensor(IR_25P_pin)
-        self.IR_sensor_50P = IRSensor(IR_50P_pin)
-        self.IR_sensor_75P = IRSensor(IR_75P_pin)
-        self.IR_sensor_Collect = IRSensor(IR_COLLECT_pin)
+        self.IR_sensor_Empty = IRSensor(IR_EMPTY)
+        self.IR_sensor_25P = IRSensor(IR_25P)
+        self.IR_sensor_50P = IRSensor(IR_50P)
+        self.IR_sensor_75P = IRSensor(IR_75P)
+        self.IR_sensor_Collect = IRSensor(IR_COLLECT)
 
         # UL sensors
         # UL pin
-        self.UL_sensor_1 = ULSensor()
+        self.UL_sensor = ULSensor()
 
         # Stepper_motor
         self.Stepper_motor_0 = StepperMotor(stepper0_control_pins)
         self.Stepper_motor_1 = StepperMotor(stepper1_control_pins)
 
         # Servo_motor
-        self.Servo_motor_0 = ServoMotor(servo_pin)
+        self.Servo_motor_0 = ServoMotor(SERVO)
 
         # TODO button
-        self.reset_button = Button('''pin''')
+        self.reset_button = Button(BUTTON)
 
 
-        self.LED_READY = LED(LED_READY_pin)
-        self.LED_USER = LED(LED_USER_pin)
-        self.LED_DISPENSING = LED(LED_DISPENSING_pin)
-        self.LED_EMPTY = LED(LED_EMPTY_pin)
-        self.LED_FAULT = LED(LED_FAULT_pin)
+        self.led_ready = LED(LED_READY)
+        self.led_user = LED(LED_USER)
+        self.led_dispensing = LED(LED_DISPENSING)
+        self.led_empty = LED(LED_EMPTY)
+        self.led_fault = LED(LED_FAULT)
 
-        self.LED_100P = LED(LED_100P_pin)
-        self.LED_75P = LED(LED_75P_pin)
-        self.LED_50P = LED(LED_50P_pin)
-        self.LED_25P = LED(LED_25P_pin)
+        self.led_100P = LED(LED_100P)
+        self.led_75P = LED(LED_75P)
+        self.led_50P = LED(LED_50P)
+        self.led_25P = LED(LED_25P)
 
     # reset all
     def reset(self):
@@ -71,18 +71,18 @@ class System(object):
 
     # Remaining masks led display reset
     def reset_stock_led(self):
-        self.turn_off_led(LED_25P)
-        self.turn_off_led(LED_50P)
-        self.turn_off_led(LED_75P)
-        self.turn_off_led(LED_100P)
+        self.led_25P.turn_off()
+        self.led_50P.turn_off()
+        self.led_75P.turn_off()
+        self.led_100P.turn_off()
 
     # Reset empty, ready, fault, DISPENSING leds, all off
     def reset_report_led(self):
-        self.turn_off_led(LED_EMPTY)
-        self.turn_off_led(LED_DISPENSING)
-        self.turn_off_led(LED_FAULT)
-        self.turn_off_led(LED_READY)
-        self.turn_off_led(LED_USER)
+        self.led_empty.turn_off()
+        self.led_dispensing.turn_off()
+        self.led_fault.turn_off()
+        self.led_ready.turn_off()
+        self.led_user.turn_off()
 
     # Turn on red "empty" LED and
     # notify control centre
@@ -90,14 +90,14 @@ class System(object):
         # turn off the rest of the leds
         self.reset_report_led()
         # open LED_EMPTY
-        self.turn_on_led(LED_EMPTY)
+        self.led_empty.turn_on()
 
     # Turn on fault LED and notify control centre
     def report_fault(self):
         # turn off the rest of the leds
         self.reset_report_led()
         # oen LED_FAULT
-        self.turn_on_led(LED_FAULT)
+        self.led_fault.turn_on()
 
     # what is the stack level?
     def display_stack_level(self):
@@ -109,21 +109,21 @@ class System(object):
         self.reset_stock_led()
         # 0-25%
         if self.IR_sensor_25P.current_read == IR_HIGH_NO_OBJ:
-            self.turn_on_led(LED_25P)
+            self.led_25P.turn_on()
         # 25-50%
         elif (self.IR_sensor_25P.current_read == IR_LOW_HAS_OBJ and
               self.IR_sensor_50P.current_read == IR_HIGH_NO_OBJ):
-            self.turn_on_led(LED_50P)
+            self.led_50P.turn_on()
         # 50-75
         elif (self.IR_sensor_25P.current_read == IR_LOW_HAS_OBJ and
               self.IR_sensor_50P.current_read == IR_LOW_HAS_OBJ and
               self.IR_sensor_75P.current_read == IR_HIGH_NO_OBJ):
-            self.turn_on_led(LED_75P)
+            self.led_75P.turn_on()
         # 75-100
         elif (self.IR_sensor_25P.current_read == IR_LOW_HAS_OBJ and
               self.IR_sensor_50P.current_read == IR_LOW_HAS_OBJ and
               self.IR_sensor_75P.current_read == IR_LOW_HAS_OBJ):
-            self.turn_on_led(LED_100P)
+            self.led_100P.turn_on()
 
     # Is mask tray empty?
     def is_mask_tray_empty(self):
@@ -145,8 +145,8 @@ class System(object):
 
     # Is mask requested
     def is_mask_requested(self):
-        self.UL_sensor_1.read_data()
-        if self.UL_sensor_1.current_read < 40:
+        self.UL_sensor.read_data()
+        if self.UL_sensor.current_read < 40:
             return True
         else:
             return False
@@ -162,11 +162,11 @@ class System(object):
     # dispensing mask
     def dispensing_mask(self):
         self.reset_report_led()
-        self.turn_on_led(LED_DISPENSING)
+        self.led_dispensing.turn_on()
         self.Stepper_motor_0.act(2, "ccw")  # partially slide mask out of stack
         # TODO Should there be a time gap between two motor moves
         self.Stepper_motor_1.act(1, "ccw")  # pull the mask completely out of stack
-        self.turn_off_led(LED_DISPENSING)
+        self.led_dispensing.turn_off()
 
     # Open door
     def open_door(self):
@@ -195,59 +195,17 @@ class System(object):
         else:
             return False
 
-    # Turn on fault LED and
-    # notify control centre
-    def turn_on_led(self, led):
-        if led == LED_EMPTY:
-            self.LED_EMPTY.light_up()
-        elif led == LED_DISPENSING:
-            self.LED_DISPENSING.light_up()
-        elif led == LED_USER:
-            self.LED_USER.light_up()
-        elif led == LED_READY:
-            self.LED_READY.light_up()
-        elif led == LED_FAULT:
-            self.LED_FAULT.light_up()
-        elif led == LED_25P:
-            self.LED_25P.light_up()
-        elif led == LED_50P:
-            self.LED_50P.light_up()
-        elif led == LED_75P:
-            self.LED_75P.light_up()
-        elif led == LED_100P:
-            self.LED_100P.light_up()
-
-    def turn_off_led(self, led):
-        if led == LED_EMPTY:
-            self.LED_EMPTY.turn_off()
-        elif led == LED_DISPENSING:
-            self.LED_DISPENSING.turn_off()
-        elif led == LED_USER:
-            self.LED_USER.turn_off()
-        elif led == LED_READY:
-            self.LED_READY.turn_off()
-        elif led == LED_FAULT:
-            self.LED_FAULT.turn_off()
-        elif led == LED_25P:
-            self.LED_25P.turn_off()
-        elif led == LED_50P:
-            self.LED_50P.turn_off()
-        elif led == LED_75P:
-            self.LED_75P.turn_off()
-        elif led == LED_100P:
-            self.LED_100P.turn_off()
-
     # HALT 
     def HALT(self):
         while not self.reset_button.is_pushed():
             # 每0.1秒轮询检测一次reset按钮是否按下
-            time.sleep(0.1)
+            time.sleep(2)
 
     # Wait_request 
     def wait_request(self):
         while not self.is_mask_requested():
-            # Poll every 0.1 seconds to check whether a client sends a Mask request
-            time.sleep(0.1)
+            # Poll every 1 seconds to check whether a client sends a Mask request
+            time.sleep(1)
 
     # Open door and move mask into collection position.
     # Wait 3 seconds for user to collect the mask

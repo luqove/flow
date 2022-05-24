@@ -54,8 +54,9 @@ class StepperMotor(object):
                     # Set all pins for the half step
                     for pin in range(4):
                         GPIO.output(self.motor_pins[pin], half_seq_cw[half_step][pin])
-                        # Sleep for short time to give motor time to react to pin change
-                        time.sleep(0.001)
+                    # Sleep for short time to give motor time to react to pin change
+                    time.sleep(0.001)
+        
         elif direction == "ccw":
             for i in range(num_rev * 512):
                 # Loop through 8 steps per sequences
@@ -63,5 +64,10 @@ class StepperMotor(object):
                     # Set all pins for the half step
                     for pin in range(4):
                         GPIO.output(self.motor_pins[pin], half_seq_ccw[half_step][pin])
-                        # Sleep for short time to give motor time to react to pin change
-                        time.sleep(0.001)
+                    # Sleep for short time to give motor time to react to pin change
+                    time.sleep(0.001)
+        
+        for pin in range(4):
+            GPIO.output(self.motor_pins[pin], 0)
+            # Sleep for short time to give motor time to react to pin change
+        time.sleep(0.001)

@@ -12,4 +12,4 @@ class IRSensor(object):
         GPIO.setup(self.pin, GPIO.IN)
 
     def read_data(self):
-        self.current_read = GPIO.Input(self.pin)
+        self.current_read = GPIO.input(self.pin)

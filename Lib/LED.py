@@ -9,7 +9,7 @@ class LED(object):
         self.pin = pin
         GPIO.setup(self.pin, GPIO.OUT)
 
-    def light_up(self):
+    def turn_on(self):
         GPIO.output(self.pin, True)
 
     def turn_off(self):

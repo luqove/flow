@@ -91,7 +91,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     # main thread
     def start_mask_mech(self):
         self.mask_system = MaskSystem()
-        self.timer.timer_signal[int].connect(self.set_mask_num)
         self.mask_system.msg_signal[str].connect(self.display_msg)
         self.mask_system.start()
 
@@ -106,11 +105,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     # Demo empty
     # TODO Here is the Demo demo, delete it later
-    def demo(self):
-        self.timer = TimerCount(0.1)
-        self.timer.timer_signal.connect(lambda: self.mask_num_decrease_by(1))
-        self.timer.start()
-
+   
 
 class TimerCount(QThread):
 

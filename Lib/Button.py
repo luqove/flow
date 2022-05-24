@@ -13,7 +13,7 @@ class Button(object):
 
     def is_pushed(self):
         time.sleep(0.005)
-        return GPIO.Input(self.pin)
+        return GPIO.input(self.pin)
 
     def is_released(self):
         time.sleep(0.005)

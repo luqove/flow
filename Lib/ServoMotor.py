@@ -20,7 +20,6 @@ class ServoMotor(object):
 
         # Initialise the pwm with pulse off
         self.pwm.start(0)
-        self.pwm.ChangeDutyCycle(7.5)  # Set starting position
 
     # To achieve rotation, to achieve door opening, or to rotate the belt
     def act(self, angle):
